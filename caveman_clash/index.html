@@ -766,6 +766,39 @@ const SPELL_G1 = [
   { q: 'A sweet treat often eaten at birthday parties',  a: 'cake'  },
 ];
 
+const SPELL_G3 = [
+  { q: 'A living thing with roots and leaves that grows in soil',   a: 'plant'   },
+  { q: 'Brightness from the sun or a lamp',                         a: 'light'   },
+  { q: 'The dark time after the sun has gone down',                 a: 'night'   },
+  { q: 'Correct; also the direction opposite of left',              a: 'right'   },
+  { q: 'Each and all; not one left out',                            a: 'every'   },
+  { q: 'Fully prepared to start something',                         a: 'ready'   },
+  { q: 'Feeling great joy or pleasure',                             a: 'happy'   },
+  { q: 'Making you laugh; amusing',                                 a: 'funny'   },
+  { q: 'Having good things happen to you by chance',                a: 'lucky'   },
+  { q: 'To hold something and move it from one place to another',   a: 'carry'   },
+  { q: 'A noise; something you can hear',                           a: 'sound'   },
+  { q: 'Shaped like a circle; not flat or pointed',                 a: 'round'   },
+  { q: 'The flat surface you walk on inside a building',            a: 'floor'   },
+  { q: 'Free from dirt or mess',                                    a: 'clean'   },
+  { q: 'Images and stories your mind creates while sleeping',       a: 'dream'   },
+  { q: 'A seat with a back and usually four legs',                  a: 'chair'   },
+  { q: 'Not ever; at no time at all',                               a: 'never'   },
+  { q: 'Happening many times; more than rarely',                    a: 'often'   },
+  { q: 'Thin flat sheets made from wood pulp, used for writing',    a: 'paper'   },
+  { q: 'A person whose job is to teach students',                   a: 'teacher' },
+  { q: 'To go upward using your hands and feet',                    a: 'climb'   },
+  { q: 'Coins and notes used to buy things',                        a: 'money'   },
+  { q: 'The green plants that cover lawns and fields',              a: 'grass'   },
+  { q: 'All of something; complete; not missing any part',          a: 'whole'   },
+  { q: 'Not old; early in life or existence',                       a: 'young'   },
+  { q: 'To take something to another person or place',              a: 'bring'   },
+  { q: 'The side that faces outward; opposite of back',             a: 'front'   },
+  { q: 'On this very day; the current day',                         a: 'today'   },
+  { q: 'To swallow a liquid through your mouth',                    a: 'drink'   },
+  { q: 'At every moment; without exception',                        a: 'always'  },
+];
+
 const SPELL_G4 = [
   { q: 'A close companion you trust',                              a: 'friend'    },
   { q: 'For the reason that',                                      a: 'because'   },
@@ -953,6 +986,13 @@ function generateMathQuestion(difficulty) {
       const b = ri(1,8), a = b + ri(1,8);
       return { type: '📐 Math', q: `What is ${a} − ${b}?`, a: String(a - b) };
     }
+  } else if (difficulty === 'grade3') {
+    const t = ri(0, 3);
+    if (t === 0) { const a = ri(10,50), b = ri(10,50); return { type: '📐 Math', q: `What is ${a} + ${b}?`, a: String(a + b) }; }
+    if (t === 1) { const b = ri(10,49), a = b + ri(1,30); return { type: '📐 Math', q: `What is ${a} − ${b}?`, a: String(a - b) }; }
+    const factor = pick([2,3,4,5,10]), x = ri(1,10);
+    if (t === 2) { return { type: '📐 Math', q: `What is ${factor} × ${x}?`, a: String(factor * x) }; }
+    return { type: '📐 Math', q: `What is ${factor * x} ÷ ${factor}?`, a: String(x) };
   } else if (difficulty === 'grade4') {
     const t = ri(0, 3);
     if (t === 0) { const a = ri(2,12), b = ri(2,12); return { type: '📐 Math', q: `What is ${a} × ${b}?`,    a: String(a * b) }; }
@@ -987,7 +1027,7 @@ function generateMathQuestion(difficulty) {
 }
 
 function generateSpellingQuestion(difficulty) {
-  const banks = { grade1: SPELL_G1, grade4: SPELL_G4, grade5: SPELL_G5, grade6: SPELL_G6, grade7: SPELL_G7, adult: SPELL_ADULT };
+  const banks = { grade1: SPELL_G1, grade3: SPELL_G3, grade4: SPELL_G4, grade5: SPELL_G5, grade6: SPELL_G6, grade7: SPELL_G7, adult: SPELL_ADULT };
   const item = pick(banks[difficulty] ?? SPELL_G1);
   const hint = item.a[0].toUpperCase();
   return { type: '🔤 Spelling', q: `${item.q}\n(Starts with: ${hint})`, a: item.a };
@@ -1020,6 +1060,7 @@ function choosePlayerCount(n) {
                placeholder="Player ${i + 1}" maxlength="20" />
         <div class="diff-btns">
           <button class="diff-btn active" data-diff="grade1" onclick="pickDiff(this)">⭐ Gr.1</button>
+          <button class="diff-btn"        data-diff="grade3" onclick="pickDiff(this)">✏️ Gr.3</button>
           <button class="diff-btn"        data-diff="grade4" onclick="pickDiff(this)">📚 Gr.4</button>
           <button class="diff-btn"        data-diff="grade5" onclick="pickDiff(this)">📖 Gr.5</button>
           <button class="diff-btn"        data-diff="grade6" onclick="pickDiff(this)">📝 Gr.6</button>
