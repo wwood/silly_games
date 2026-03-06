@@ -92,6 +92,29 @@
     }
     .diff-btn:hover { border-color: #8a5020; color: #a07040; }
     .diff-btn.active { background: linear-gradient(145deg, #3a1e0c, #1c0f06); border-color: #c09050; color: #e8c060; }
+    .options-row {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 14px; justify-content: center;
+    }
+    .options-label { color: #9a7a50; font-size: 12px; font-weight: bold; letter-spacing: 1.5px; text-transform: uppercase; white-space: nowrap; }
+    .board-size-btns { display: flex; gap: 6px; }
+    .board-size-btn {
+      padding: 5px 18px;
+      background: #120900; border: 1px solid #4a2a0e; border-radius: 5px;
+      color: #6a5030; font-size: 13px; font-weight: bold; font-family: Georgia, serif;
+      cursor: pointer; transition: all 0.1s;
+    }
+    .board-size-btn:hover { border-color: #8a5020; color: #a07040; }
+    .board-size-btn.active { background: linear-gradient(145deg, #3a1e0c, #1c0f06); border-color: #c09050; color: #e8c060; }
+
+    .hard-mode-label {
+      display: flex; align-items: center; gap: 8px; cursor: pointer;
+    }
+    .hard-mode-label input[type="checkbox"] {
+      width: 16px; height: 16px; accent-color: #c09050; cursor: pointer;
+    }
+    .hard-mode-text { color: #9a7a50; font-size: 12px; font-style: italic; }
+
     .start-go-btn {
       padding: 12px 40px;
       background: linear-gradient(145deg, #5a3018, #3a1e0c); border: 2px solid #9a6030; border-radius: 9px;
@@ -136,8 +159,6 @@
     ══════════════════════════════════════════════════════════ */
     .board {
       display: grid;
-      grid-template-columns: repeat(4, 100px);
-      grid-template-rows:    repeat(4, 100px);
       gap: 4px; background: #0a0602;
     }
 
@@ -466,6 +487,48 @@
     .v-char    { color: #e8c060; font-size: 22px; font-weight: bold; }
     .v-str     { color: #c8a878; font-size: 16px; }
     .v-tagline { color: #7a6050; font-size: 13px; font-style: italic; margin-top: 4px; }
+    /* ══════════════════════════════════════════════════════════
+       HOW TO PLAY MODAL
+    ══════════════════════════════════════════════════════════ */
+    #howtoplay-modal {
+      position: fixed; inset: 0; background: rgba(5,2,0,0.88);
+      display: flex; align-items: center; justify-content: center; z-index: 250;
+    }
+    @keyframes htp-in {
+      from { transform: scale(0.82) translateY(-20px); opacity: 0; }
+      to   { transform: scale(1)    translateY(0);      opacity: 1; }
+    }
+    .htp-box {
+      background: #1c0f06; border: 4px solid #6b3a1f; border-radius: 18px;
+      padding: 36px 44px 38px; text-align: center; max-width: 420px; width: 90%;
+      box-shadow: 0 0 80px rgba(0,0,0,0.95), inset 0 0 30px rgba(0,0,0,0.5);
+      animation: htp-in 0.32s cubic-bezier(0.34,1.4,0.64,1) forwards;
+      display: flex; flex-direction: column; align-items: center; gap: 18px;
+    }
+    .htp-title {
+      color: #e8c060; font-size: 26px; font-weight: bold;
+      letter-spacing: 4px; text-transform: uppercase;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(232,192,96,0.35);
+    }
+    .htp-steps { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+    .htp-step {
+      display: flex; align-items: flex-start; gap: 12px; text-align: left;
+      background: rgba(255,255,255,0.03); border: 1px solid #3a1e0c;
+      border-radius: 9px; padding: 10px 14px;
+    }
+    .htp-icon { font-size: 24px; flex-shrink: 0; line-height: 1.3; }
+    .htp-text { color: #c8a878; font-size: 14px; line-height: 1.55; }
+    .htp-text strong { color: #e8c060; }
+    .htp-play-btn {
+      padding: 13px 48px;
+      background: linear-gradient(145deg, #5a3018, #3a1e0c); border: 2px solid #9a6030; border-radius: 10px;
+      color: #e8c060; font-size: 17px; font-weight: bold; font-family: Georgia, serif;
+      cursor: pointer; transition: all 0.13s;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.6);
+    }
+    .htp-play-btn:hover { background: linear-gradient(145deg, #7a4828, #5a2e18); border-color: #c09050; color: #fff0a0; transform: translateY(-2px); }
+    .htp-play-btn:active { transform: translateY(0); }
+
     .restart-btn {
       margin-top: 20px; padding: 14px 44px;
       background: linear-gradient(145deg, #5a3018, #3a1e0c); border: 3px solid #9a6030; border-radius: 10px;
@@ -487,6 +550,38 @@
 </div>
 
 <!-- ══════════════════════════════════════════════════════════
+     HOW TO PLAY MODAL
+══════════════════════════════════════════════════════════ -->
+<div id="howtoplay-modal" style="display:none">
+  <div class="htp-box">
+    <div class="htp-title">🦴 How To Play</div>
+    <div class="htp-steps">
+      <div class="htp-step">
+        <div class="htp-icon">🎲</div>
+        <div class="htp-text">On your turn, <strong>roll the dice</strong> to move your player around the board.</div>
+      </div>
+      <div class="htp-step">
+        <div class="htp-icon">❓</div>
+        <div class="htp-text">Land on a <strong>special square</strong> to draw a character card. Answer a question right and you can become that character!</div>
+      </div>
+      <div class="htp-step">
+        <div class="htp-icon">⚔️</div>
+        <div class="htp-text">Each character has a <strong>strength number</strong>. Try to get a character with a big number!</div>
+      </div>
+      <div class="htp-step">
+        <div class="htp-icon">👊</div>
+        <div class="htp-text">If you land on the <strong>same square</strong> as another player, you fight! The one with the higher strength wins.</div>
+      </div>
+      <div class="htp-step">
+        <div class="htp-icon">🏆</div>
+        <div class="htp-text">The <strong>last player left</strong> is the winner!</div>
+      </div>
+    </div>
+    <button class="htp-play-btn" onclick="dismissHowToPlay()">Let's Play! ⚔️</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
      START SCREEN
 ══════════════════════════════════════════════════════════ -->
 <div id="start-screen" style="display:none">
@@ -505,10 +600,28 @@
       </div>
     </div>
 
-    <!-- Step 2: enter names -->
+    <!-- Step 2: enter names + options -->
     <div id="step-names" style="display:none">
       <div class="start-q">Enter player names</div>
       <div class="name-inputs" id="name-inputs"></div>
+
+      <!-- Board size -->
+      <div class="options-row">
+        <span class="options-label">Board Size</span>
+        <div class="board-size-btns">
+          <button class="board-size-btn active" data-size="4" onclick="pickBoardSize(this)">4×4</button>
+          <button class="board-size-btn"        data-size="5" onclick="pickBoardSize(this)">5×5</button>
+        </div>
+      </div>
+
+      <!-- Hard mode -->
+      <div class="options-row">
+        <label class="hard-mode-label" for="hard-mode-check">
+          <input type="checkbox" id="hard-mode-check" />
+          <span class="hard-mode-text">💀 Hard Mode — lose 1 strength each turn (min 1)</span>
+        </label>
+      </div>
+
       <button class="start-go-btn" onclick="beginGame()">⚔️ Begin!</button>
     </div>
   </div>
@@ -647,19 +760,34 @@
 //  BOARD DATA
 // ════════════════════════════════════════════════════════════════════
 
-const SQUARES = [
-  { id:0, col:1, row:4, isCorner:true  }, { id:1,  col:2, row:4, isCorner:false },
-  { id:2, col:3, row:4, isCorner:false }, { id:3,  col:4, row:4, isCorner:true  },
-  { id:4, col:4, row:3, isCorner:false }, { id:5,  col:4, row:2, isCorner:false },
-  { id:6, col:4, row:1, isCorner:true  }, { id:7,  col:3, row:1, isCorner:false },
-  { id:8, col:2, row:1, isCorner:false }, { id:9,  col:1, row:1, isCorner:true  },
-  { id:10,col:1, row:2, isCorner:false }, { id:11, col:1, row:3, isCorner:false },
-];
+// Dynamic board generation — supports any square grid size
+function makeSquares(size) {
+  const sq = []; let id = 0;
+  // Bottom row left→right
+  for (let col = 1; col <= size; col++)
+    sq.push({ id: id++, col, row: size, isCorner: col === 1 || col === size });
+  // Right col going up (skip corners already added)
+  for (let row = size - 1; row >= 2; row--)
+    sq.push({ id: id++, col: size, row, isCorner: false });
+  // Top row right→left
+  for (let col = size; col >= 1; col--)
+    sq.push({ id: id++, col, row: 1, isCorner: col === size || col === 1 });
+  // Left col going down (skip corners already added)
+  for (let row = 2; row <= size - 1; row++)
+    sq.push({ id: id++, col: 1, row, isCorner: false });
+  return sq;
+}
 
-const CORNER_META = {
-  0: {icon:'🏁',label:'Start'}, 3: {icon:'🏕️',label:'Camp'},
-  6: {icon:'🦣',label:'Hunt'},  9: {icon:'🍖',label:'Feast'},
-};
+function makeCornerMeta(squares) {
+  const corners = squares.filter(s => s.isCorner);
+  const labels  = [
+    {icon:'🏁',label:'Start'}, {icon:'🏕️',label:'Camp'},
+    {icon:'🦣',label:'Hunt'},  {icon:'🍖',label:'Feast'},
+  ];
+  const meta = {};
+  corners.forEach((sq, i) => { meta[sq.id] = labels[i % labels.length]; });
+  return meta;
+}
 
 // ════════════════════════════════════════════════════════════════════
 //  PLAYER CONFIG
@@ -689,6 +817,16 @@ const CARD_TEMPLATES = [
   {name:'Golem',        strength:19, avatar:'🗿',  desc:'Ancient stone guardian'       },
   {name:'Shaman',       strength:11, avatar:'🌀',  desc:'Caller of spirits'            },
   {name:'Warlord',      strength:20, avatar:'👑',  desc:'Supreme commander of armies'  },
+  {name:'Titan',        strength:21, avatar:'🗻',  desc:'Ancient giant of immense power'     },
+  {name:'Phoenix',      strength:22, avatar:'🦅',  desc:'Reborn from the ashes of defeat'    },
+  {name:'Valkyrie',     strength:23, avatar:'🛡️',  desc:'Divine chooser of the slain'        },
+  {name:'Cyclops',      strength:24, avatar:'👁️',  desc:'One-eyed giant of destruction'      },
+  {name:'Kraken',       strength:25, avatar:'🦑',  desc:'Terror of the ancient seas'         },
+  {name:'Leviathan',    strength:26, avatar:'🌊',  desc:'Behemoth of the deep abyss'         },
+  {name:'Hydra',        strength:27, avatar:'🐍',  desc:'Many-headed beast of chaos'         },
+  {name:'Sphinx',       strength:28, avatar:'🦁',  desc:'Riddler and devourer of the weak'   },
+  {name:'Chimera',      strength:29, avatar:'🐲',  desc:'Fearsome creature of legend'        },
+  {name:'God-King',     strength:30, avatar:'🌟',  desc:'Supreme ruler of all realms'        },
 ];
 
 // ════════════════════════════════════════════════════════════════════
@@ -704,6 +842,10 @@ const state = {
   movingPlayerIdx:  null,   // set during token movement for hop animation
   deck:             [],
   discards:         [],
+  boardSize:        4,
+  hardMode:         false,
+  squares:          [],
+  cornerMeta:       {},
 };
 
 // ════════════════════════════════════════════════════════════════════
@@ -720,8 +862,8 @@ function shuffle(arr) {
 }
 
 function sqLabel(squareId) {
-  const sq = SQUARES.find(s => s.id === squareId);
-  if (sq?.isCorner) return CORNER_META[squareId].label;
+  const sq = state.squares.find(s => s.id === squareId);
+  if (sq?.isCorner) return state.cornerMeta[squareId].label;
   if (squareId === state.mysterySquareId) return 'Mystery Square';
   return `Square ${squareId}`;
 }
@@ -1079,6 +1221,11 @@ function pickDiff(btn) {
   btn.classList.add('active');
 }
 
+function pickBoardSize(btn) {
+  document.querySelectorAll('.board-size-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
 function beginGame() {
   const step    = document.getElementById('step-names');
   const n       = parseInt(step.dataset.count);
@@ -1097,11 +1244,18 @@ function beginGame() {
     diffs.push('grade1');
     aiFlags.push(true);
   }
-  startGame(names.length, names, diffs, aiFlags);
+  const boardSize = parseInt(document.querySelector('.board-size-btn.active')?.dataset.size ?? 4);
+  const hardMode  = document.getElementById('hard-mode-check').checked;
+  startGame(names.length, names, diffs, aiFlags, boardSize, hardMode);
 }
 
-function startGame(n, names, diffs, aiFlags = []) {
-  const nonCorners     = SQUARES.filter(s => !s.isCorner);
+function startGame(n, names, diffs, aiFlags = [], boardSize = 4, hardMode = false) {
+  state.boardSize   = boardSize;
+  state.hardMode    = hardMode;
+  state.squares     = makeSquares(boardSize);
+  state.cornerMeta  = makeCornerMeta(state.squares);
+
+  const nonCorners      = state.squares.filter(s => !s.isCorner);
   state.mysterySquareId = nonCorners[Math.floor(Math.random() * nonCorners.length)].id;
 
   state.players = Array.from({length: n}, (_, i) => ({
@@ -1135,11 +1289,14 @@ function startGame(n, names, diffs, aiFlags = []) {
 function buildBoard() {
   const board = document.getElementById('board');
   board.innerHTML = '';
+  const sz = state.boardSize;
+  board.style.gridTemplateColumns = `repeat(${sz}, 100px)`;
+  board.style.gridTemplateRows    = `repeat(${sz}, 100px)`;
 
   const center = document.createElement('div');
   center.className = 'center-area';
-  center.style.gridColumn = '2 / 4';
-  center.style.gridRow    = '2 / 4';
+  center.style.gridColumn = `2 / ${sz}`;
+  center.style.gridRow    = `2 / ${sz}`;
   center.innerHTML = `
     <div class="center-label">Character Cards</div>
     <div class="card-stack" id="card-stack">
@@ -1148,7 +1305,7 @@ function buildBoard() {
     <div class="card-stack-label" id="card-count">— cards</div>`;
   board.appendChild(center);
 
-  SQUARES.forEach(sq => {
+  state.squares.forEach(sq => {
     const isMystery = sq.isCorner || sq.id === state.mysterySquareId;
     const el = document.createElement('div');
     el.className = ['square', sq.isCorner?'corner':'', isMystery?'mystery':''].filter(Boolean).join(' ');
@@ -1157,7 +1314,7 @@ function buildBoard() {
     el.dataset.squareId = sq.id;
     let html = `<span class="sq-id">${sq.id}</span>`;
     if (sq.isCorner) {
-      const m = CORNER_META[sq.id];
+      const m = state.cornerMeta[sq.id];
       html += `<div class="corner-icon">${m.icon}</div><div class="q-mark">?</div><div class="corner-label">${m.label}</div>`;
     } else if (isMystery) {
       html += `<div class="q-mark">?</div>`;
@@ -1508,8 +1665,13 @@ function showVictoryScreen(winner) {
 }
 
 function enterGame() {
-  document.getElementById('welcome-screen').style.display = 'none';
-  document.getElementById('start-screen').style.display   = 'flex';
+  document.getElementById('welcome-screen').style.display  = 'none';
+  document.getElementById('howtoplay-modal').style.display = 'flex';
+}
+
+function dismissHowToPlay() {
+  document.getElementById('howtoplay-modal').style.display = 'none';
+  document.getElementById('start-screen').style.display    = 'flex';
 }
 
 function restartGame() {
@@ -1531,6 +1693,14 @@ function updateTurnPanel() {
   document.getElementById('turn-player-label').textContent  = `${p.name}'s Turn`;
   document.getElementById('die-box').textContent            = '—';
   document.getElementById('turn-msg').textContent           = '';
+
+  // Hard mode: lose 1 strength at the start of each turn (min 1)
+  if (state.hardMode && !p.eliminated && p.strength > 1) {
+    p.strength--;
+    setTurnMsg(`💀 Hard Mode: ${p.name} loses 1 strength! (⚔️ ${p.strength})`);
+    renderSidebar();
+  }
+
   setRollBtnEnabled(!p.isAI);
   if (p.isAI) setTimeout(rollDice, 900);
 
@@ -1604,7 +1774,7 @@ function movePlayer(playerIdx, steps, callback) {
       callback();
       return;
     }
-    p.square = (p.square + 1) % SQUARES.length;
+    p.square = (p.square + 1) % state.squares.length;
     remaining--;
     renderTokens();
     flashSquare(p.square);
@@ -1626,7 +1796,7 @@ function flashSquare(id) {
 
 function checkSquareEvents(playerIdx, doneCallback) {
   const p          = state.players[playerIdx];
-  const sq         = SQUARES.find(s => s.id === p.square);
+  const sq         = state.squares.find(s => s.id === p.square);
   const isMysterySq = sq.isCorner || p.square === state.mysterySquareId;
   const label       = sqLabel(p.square);
 
