@@ -673,10 +673,14 @@ function pLoop(){
 
   // If we moved to a new event, advance bookkeeping
   if(evIdx!==curEvIdx){
-    // If the previous note wasn't graded yet, grade it now
     const prevEv=scEv[curEvIdx];
-    if(!prevEv.isRest&&!prevEv.isDeco&&!pNotes[curPI]?.status){
-      gradeNote();curPI++;bestDet=null;
+    // Only grade if the previous event was a playable note AND it hasn't been graded yet
+    // Find the pNote matching the previous event by idx (not by curPI, which may have moved)
+    if(!prevEv.isRest&&!prevEv.isDeco){
+      const prevPN=pNotes.find(p=>p.idx===prevEv.idx);
+      if(prevPN&&!prevPN.status){
+        gradeNote();curPI++;bestDet=null;
+      }
     }
     curEvIdx=evIdx;
   }
@@ -871,10 +875,12 @@ function scLoop(){
   const ev=scScEv[evIdx];
 
   if(evIdx!==scCurEvIdx){
-    // Grade previous note if not yet graded
     const prevEv=scScEv[scCurEvIdx];
-    if(!prevEv.isRest&&!prevEv.isDeco&&scPNotes[scCurPI]&&!scPNotes[scCurPI].status){
-      scGrade();scCurPI++;scBestDet=null;
+    if(!prevEv.isRest&&!prevEv.isDeco){
+      const prevPN=scPNotes.find(p=>p.idx===prevEv.idx);
+      if(prevPN&&!prevPN.status){
+        scGrade();scCurPI++;scBestDet=null;
+      }
     }
     scCurEvIdx=evIdx;
   }
