@@ -176,7 +176,7 @@
 <div class="app">
   <header>
     <h1>Violin <span>Practice Studio</span></h1>
-    <div class="piece-title" id="subtitleText">Shake Up High, Shake Down Low</div>
+    <div class="piece-title" id="subtitleText">Shake Up High</div>
     <div class="header-rule"></div>
   </header>
 
@@ -399,66 +399,50 @@ document.querySelectorAll('.mode-tab').forEach(tab=>{tab.addEventListener('click
   document.getElementById('practicePanel').classList.toggle('hidden',m!=='practice');
   document.getElementById('scalesPanel').classList.toggle('visible',m==='scales');
   document.getElementById('freeplayPanel').classList.toggle('visible',m==='freeplay');
-  document.getElementById('subtitleText').textContent={practice:'Shake Up High, Shake Down Low',scales:'Open String Scales',freeplay:'Free Play & Tuner'}[m];
+  document.getElementById('subtitleText').textContent={practice:'Shake Up High',scales:'Open String Scales',freeplay:'Free Play & Tuner'}[m];
 });});
 
 // ============================================================
-//  MUSIC DATA — "Shake Up High, Shake Down Low"
-//  The middle line (line 3 in the original score):
+//  MUSIC DATA — "Shake Up High"
+//  ABC: A A A z | D D D z | A z A z | D D D z  (x2)
+//  A4=69 (2nd space treble), D4=62 (just below bottom line)
 // ============================================================
-const E4=64,G4=67,A4=69;
-function phraseEv(){return[
-  {m:E4,b:1},{m:E4,b:1},{m:A4,b:1},{m:null,b:1},
-  {m:A4,b:1},{m:G4,b:1},{m:E4,b:1},{m:null,b:1},
-  {m:A4,b:1},{m:null,b:1},{m:A4,b:1},{m:null,b:1},
-  {m:E4,b:1},{m:E4,b:1},{m:G4,b:1},{m:E4,b:1},
-];}
-//  Bar 1: Whole note ⊗ on B4 (4 beats) — SCORED
-//  Bar 2: Whole note ⊗ on B4 (4 beats) — SCORED
-//  Bar 3: X(1) rest(1) X(1) rest(1) — thigh taps, NOT scored
-//  Bar 4: X(1) rest(1) X(1) X(1) X(1) rest(1) — hmm, looking again...
-//  Actually bars 3-4 from the image: alternating X and rest pattern across 8 beats
-//  x rest x rest x rest x rest  (4 pairs across 2 bars)
-// ============================================================
-const B4=71; // middle staff line — the whole note pitch
-function middleLine(){return[
-  // Bar 1: whole note on B4, scored
-  {m:B4,b:4,whole:true},
-  // Bar 2: whole note on B4, scored
-  {m:B4,b:4,whole:true},
-  // Bars 3-4: X noteheads (thigh taps) alternating with rests — decorative, not scored
-  {m:null,b:1,tap:true},{m:null,b:1},{m:null,b:1,tap:true},{m:null,b:1},
-  {m:null,b:1,tap:true},{m:null,b:1},{m:null,b:1,tap:true},{m:null,b:1},
-];}
+const D4=62,A4=69;
 
-// Build full event list: line1, line2, middleLine, line3(=line1), line4(=line2)
-const allEv=[];
-// Lines 1,2
-for(let r=0;r<2;r++) phraseEv().forEach(e=>allEv.push({...e}));
-// Middle line
-middleLine().forEach(e=>allEv.push({...e}));
-// Lines 4,5
-for(let r=0;r<2;r++) phraseEv().forEach(e=>allEv.push({...e}));
+const allEv=[
+  // Bar 1: A A A z
+  {m:A4,b:1},{m:A4,b:1},{m:A4,b:1},{m:null,b:1},
+  // Bar 2: D D D z
+  {m:D4,b:1},{m:D4,b:1},{m:D4,b:1},{m:null,b:1},
+  // Bar 3: A z A z
+  {m:A4,b:1},{m:null,b:1},{m:A4,b:1},{m:null,b:1},
+  // Bar 4: D D D z
+  {m:D4,b:1},{m:D4,b:1},{m:D4,b:1},{m:null,b:1},
+  // Bar 5: A A A z
+  {m:A4,b:1},{m:A4,b:1},{m:A4,b:1},{m:null,b:1},
+  // Bar 6: D D D z
+  {m:D4,b:1},{m:D4,b:1},{m:D4,b:1},{m:null,b:1},
+  // Bar 7: A z A z
+  {m:A4,b:1},{m:null,b:1},{m:A4,b:1},{m:null,b:1},
+  // Bar 8: D D D z
+  {m:D4,b:1},{m:D4,b:1},{m:D4,b:1},{m:null,b:1},
+];
 
 // Build score events with sequential index, cumulative beat offset
 const scEv=[];
 let cumBeat=0;
 allEv.forEach((e,i)=>{
-  const isTap=!!e.tap;
-  const isWhole=!!e.whole;
-  const isRest=e.m===null&&!isTap;
-  // Taps are decorative (not scored, not rests — rendered as X noteheads)
-  // Whole notes are scored playable notes
-  scEv.push({...e, idx:i, status:null, isRest, isDeco:isTap, isWhole, beatOffset:cumBeat});
+  const isRest=e.m===null;
+  scEv.push({...e, idx:i, status:null, isRest, isDeco:false, isWhole:false, beatOffset:cumBeat});
   cumBeat+=e.b;
 });
 const totalBeats=cumBeat;
 
-// Playable notes = non-rest, non-deco (includes whole notes)
-const pNotes=scEv.filter(e=>!e.isRest&&!e.isDeco);
+// Playable notes = non-rest
+const pNotes=scEv.filter(e=>!e.isRest);
 pNotes.forEach((n,i)=>{n.playIdx=i;});
 
-// Display lines: 16 beats each. We split by beat count.
+// Display lines: 16 beats each (4 bars per line)
 const dLines=[];
 let lineAcc=[],lineBeatAcc=0;
 scEv.forEach(ev=>{
@@ -467,14 +451,14 @@ scEv.forEach(ev=>{
 });
 if(lineAcc.length)dLines.push(lineAcc);
 
-const LYR_BASE=['Shake','up','high,','','shake','down','low.','','High,','','high,','','way','down','low.',''];
+const LYR_BASE=['Shake','up','high,','','shake','down','low.','','High,','','high,','','shake','down','low.',''];
 
 // ============================================================
 //  SCORE RENDERING (shared)
 // ============================================================
 const SCC={perfect:'#1b8a4a',near:'#2468b0',off:'#c07818',wrong:'#c03030'};
-function noteY(m,st){return st+({55:65,57:60,59:55,60:50,62:45,64:40,65:35,67:30,69:25,71:20,72:15,74:10,76:5}[m]||40);}
-function ledgers(m,st){const l=[];if(m<=62)l.push(st+50);if(m<=57)l.push(st+60);return l;}
+function noteY(m,st){return st+({55:65,57:60,59:55,60:50,62:50,64:40,65:35,67:30,69:25,71:20,72:15,74:10,76:5}[m]||40);}
+function ledgers(m,st){const l=[];if(m<=62)l.push(st+45);if(m<=57)l.push(st+55);return l;}
 
 // Global playhead state (set by the active mode's loop)
 let playheadGlobalBeat=-1; // current fractional beat position, -1 = off
@@ -836,13 +820,13 @@ function updStats(){
 }
 
 function renderScore(){
-  renderScoreGeneric('scoreInner','scoreWrap','Shake Up High, Shake Down Low','C Major · 4/4 · Open Strings E & A',dLines,scEv,pNotes,playing,curPI,LYR_BASE,true);
+  renderScoreGeneric('scoreInner','scoreWrap','Shake Up High','C Major · 4/4 · Open Strings A & D',dLines,scEv,pNotes,playing,curPI,LYR_BASE,false);
 }
 
 // ============================================================
 //  SCALES MODE
 // ============================================================
-const G3=55,D4=62,A4sc=69,E5=76;
+const G3=55,A4sc=69,E5=76;
 const scalePhrase=[
   {m:G3,b:1},{m:G3,b:1},{m:G3,b:1},{m:G3,b:1},
   {m:D4,b:1},{m:D4,b:1},{m:D4,b:1},{m:D4,b:1},
@@ -1246,13 +1230,13 @@ renderScore();updStats();renderScales();scUpdStats();
         const rw=hw*1.76; // full width of rect
         const rh=Math.max(8,hw*0.8*Math.max(0.2,frac)+5);
         const rx2=Math.max(2,rw*0.12); // corner radius
-        const nx=cx-rw/2, ny=y-rh/2;
+        const nx=cx-rw/2, ny=y-rh; // bottom of rect at y (the beat position)
 
         // Glow halo
         const haloColor=grade?
           ({perfect:'rgba(61,217,122,',ok:'rgba(94,170,255,',miss:'rgba(217,74,74,'}[grade]):
           'rgba(200,198,210,';
-        const gGrad2=ctx2d.createRadialGradient(cx,y,0,cx,y,rw*1.2);
+        const gGrad2=ctx2d.createRadialGradient(cx,ny+rh/2,0,cx,ny+rh/2,rw*1.2);
         gGrad2.addColorStop(0,haloColor+'0.28)');
         gGrad2.addColorStop(1,'transparent');
         ctx2d.fillStyle=gGrad2;
@@ -1280,7 +1264,7 @@ renderScore();updStats();renderScales();scUpdStats();
         ctx2d.font=`600 ${fontSize}px 'DM Sans',sans-serif`;
         ctx2d.textAlign='center';
         ctx2d.textBaseline='middle';
-        ctx2d.fillText(noteName,cx,y);
+        ctx2d.fillText(noteName,cx,ny+rh/2);
         ctx2d.globalAlpha=1;
         ctx2d.textBaseline='alphabetic';
       });
