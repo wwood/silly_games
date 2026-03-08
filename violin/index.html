@@ -1085,7 +1085,7 @@ renderScore();updStats();renderScales();scUpdStats();
   }
 
   const NOTE_LOOK_AHEAD=6;
-  const NOTE_LOOK_BEHIND=1.5;
+  const NOTE_LOOK_BEHIND=2.5;
   const HIT_ZONE_FRAC=0.15;
   const HORIZON_FRAC=0.10;
 
@@ -1235,7 +1235,10 @@ renderScore();updStats();renderScales();scUpdStats();
         const trackIdx=stringTrackFor(ev.m);
         const noteName=midiName(ev.m);
         const pn=playableNotes.find(p=>p.idx===ev.idx);
-        const grade=pn?pn.status:null;
+        const rawStatus=pn?pn.status:null;
+        // Normalize raw status ('perfect','near','off','wrong') to display grade
+        const grade=rawStatus?
+          ({perfect:'perfect',near:'ok',off:'ok',wrong:'miss'}[rawStatus]||null):null;
 
         const {cx,hw,frac,y}=trackLayout(trackIdx,beat,cb,cW,cH);
         if(y<horizY-10||y>cH+40) return;
