@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Type It All!</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #0a0a2e;
+    color: #e0e0ff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    user-select: none;
+  }
+  h1 {
+    margin-top: 30px;
+    font-size: 2.5rem;
+    background: linear-gradient(90deg, #ff6b6b, #ffd93d, #6bff6b, #6bb5ff, #d06bff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .subtitle { color: #888; margin: 6px 0 20px; font-size: 0.95rem; }
+  .mode-toggle {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .mode-btn {
+    padding: 10px 22px;
+    border: 2px solid #444;
+    border-radius: 8px;
+    background: transparent;
+    color: #aaa;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .mode-btn:hover { border-color: #888; color: #ddd; }
+  .mode-btn.active { border-color: #6bb5ff; color: #6bb5ff; background: rgba(107,181,255,0.1); }
+  .timer {
+    font-size: 3rem;
+    font-variant-numeric: tabular-nums;
+    color: #ffd93d;
+    margin: 10px 0;
+    min-height: 60px;
+  }
+  .status {
+    font-size: 1.3rem;
+    min-height: 40px;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+  .status.fail { color: #ff6b6b; }
+  .status.win { color: #6bff6b; }
+  .keyboard {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 600px;
+    gap: 6px;
+    margin-bottom: 25px;
+  }
+  .key {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #333;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: all 0.15s;
+    background: rgba(255,255,255,0.03);
+  }
+  .key.pressed {
+    background: rgba(107,255,107,0.25);
+    border-color: #6bff6b;
+    color: #6bff6b;
+  }
+  .key.failed {
+    background: rgba(255,107,107,0.35);
+    border-color: #ff6b6b;
+    color: #ff6b6b;
+    animation: shake 0.3s;
+  }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+  }
+  .restart-btn {
+    padding: 12px 30px;
+    border: 2px solid #6bb5ff;
+    border-radius: 8px;
+    background: transparent;
+    color: #6bb5ff;
+    font-size: 1.1rem;
+    cursor: pointer;
+    margin-bottom: 30px;
+    transition: all 0.2s;
+  }
+  .restart-btn:hover { background: rgba(107,181,255,0.15); }
+  .leaderboard {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 20px 30px;
+    min-width: 350px;
+    max-width: 500px;
+    margin-bottom: 40px;
+  }
+  .leaderboard h2 {
+    text-align: center;
+    margin-bottom: 12px;
+    color: #ffd93d;
+    font-size: 1.3rem;
+  }
+  .lb-tabs {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+  .lb-tab {
+    padding: 5px 14px;
+    border: 1px solid #444;
+    border-radius: 6px;
+    background: transparent;
+    color: #888;
+    cursor: pointer;
+    font-size: 0.85rem;
+  }
+  .lb-tab.active { border-color: #ffd93d; color: #ffd93d; }
+  .lb-entry {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 4px;
+    border-bottom: 1px solid #222;
+    font-size: 1rem;
+  }
+  .lb-entry:last-child { border-bottom: none; }
+  .lb-rank { color: #888; width: 30px; }
+  .lb-name { flex: 1; }
+  .lb-time { color: #6bff6b; font-variant-numeric: tabular-nums; }
+  .lb-empty { text-align: center; color: #555; padding: 20px 0; }
+  .name-input-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+  .name-input-overlay.show { display: flex; }
+  .name-input-box {
+    background: #1a1a3e;
+    border: 2px solid #6bff6b;
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+  }
+  .name-input-box h3 { color: #6bff6b; margin-bottom: 5px; font-size: 1.4rem; }
+  .name-input-box .time-display { color: #ffd93d; font-size: 1.8rem; margin-bottom: 15px; }
+  .name-input-box input {
+    padding: 10px 16px;
+    font-size: 1.1rem;
+    border: 2px solid #444;
+    border-radius: 8px;
+    background: #0a0a2e;
+    color: #e0e0ff;
+    text-align: center;
+    width: 220px;
+    outline: none;
+  }
+  .name-input-box input:focus { border-color: #6bb5ff; }
+  .name-input-box button {
+    display: block;
+    margin: 12px auto 0;
+    padding: 8px 24px;
+    border: 2px solid #6bff6b;
+    border-radius: 8px;
+    background: transparent;
+    color: #6bff6b;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  .mode-label {
+    font-size: 0.75rem;
+    color: #666;
+    margin-top: 4px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Type It All!</h1>
+<p class="subtitle">Type every letter of the alphabet as fast as you can</p>
+
+<div class="mode-toggle">
+  <button class="mode-btn active" id="normalBtn" onclick="setMode('normal')">
+    Normal
+    <div class="mode-label">Any order, no repeats needed</div>
+  </button>
+  <button class="mode-btn" id="strictBtn" onclick="setMode('strict')">
+    Strict
+    <div class="mode-label">Same letter twice = disqualified</div>
+  </button>
+</div>
+
+<div class="timer" id="timer">0.000s</div>
+<div class="status" id="status">Press any letter to start...</div>
+
+<div class="keyboard" id="keyboard"></div>
+
+<button class="restart-btn" id="restartBtn" onclick="restart()">Restart (Space / Enter)</button>
+
+<div class="leaderboard">
+  <h2>Leaderboard</h2>
+  <div class="lb-tabs">
+    <button class="lb-tab active" id="lbNormalTab" onclick="showLeaderboard('normal')">Normal</button>
+    <button class="lb-tab" id="lbStrictTab" onclick="showLeaderboard('strict')">Strict</button>
+  </div>
+  <div id="leaderboardList"></div>
+</div>
+
+<div class="name-input-overlay" id="nameOverlay">
+  <div class="name-input-box">
+    <h3>New Leaderboard Entry!</h3>
+    <div class="time-display" id="finalTime"></div>
+    <input type="text" id="nameInput" placeholder="Enter your name" maxlength="20" autocomplete="off">
+    <button id="nameSubmit" onclick="submitName()">Save</button>
+  </div>
+</div>
+
+<script>
+const ALPHABET = 'abcdefghijklmnopqrstuvwxyz';
+const MAX_LEADERBOARD = 10;
+
+let mode = 'normal';
+let pressed = new Set();
+let startTime = null;
+let running = false;
+let finished = false;
+let failed = false;
+let timerRAF = null;
+let pendingTime = null;
+let viewingLb = 'normal';
+
+const keyboardEl = document.getElementById('keyboard');
+const timerEl = document.getElementById('timer');
+const statusEl = document.getElementById('status');
+const nameOverlay = document.getElementById('nameOverlay');
+const nameInput = document.getElementById('nameInput');
+const finalTimeEl = document.getElementById('finalTime');
+
+// Build keyboard display
+function buildKeyboard() {
+  keyboardEl.innerHTML = '';
+  for (const ch of ALPHABET) {
+    const div = document.createElement('div');
+    div.className = 'key';
+    div.id = 'key-' + ch;
+    div.textContent = ch;
+    keyboardEl.appendChild(div);
+  }
+}
+buildKeyboard();
+
+function setMode(m) {
+  mode = m;
+  document.getElementById('normalBtn').classList.toggle('active', m === 'normal');
+  document.getElementById('strictBtn').classList.toggle('active', m === 'strict');
+  restart();
+}
+
+function restart() {
+  pressed = new Set();
+  startTime = null;
+  running = false;
+  finished = false;
+  failed = false;
+  pendingTime = null;
+  if (timerRAF) cancelAnimationFrame(timerRAF);
+  timerEl.textContent = '0.000s';
+  statusEl.textContent = 'Press any letter to start...';
+  statusEl.className = 'status';
+  nameOverlay.classList.remove('show');
+  for (const ch of ALPHABET) {
+    const el = document.getElementById('key-' + ch);
+    el.className = 'key';
+  }
+}
+
+function updateTimer() {
+  if (!running) return;
+  const elapsed = (performance.now() - startTime) / 1000;
+  timerEl.textContent = elapsed.toFixed(3) + 's';
+  timerRAF = requestAnimationFrame(updateTimer);
+}
+
+function fail(reason, failKey) {
+  failed = true;
+  running = false;
+  if (timerRAF) cancelAnimationFrame(timerRAF);
+  statusEl.textContent = reason;
+  statusEl.className = 'status fail';
+  if (failKey) {
+    const el = document.getElementById('key-' + failKey);
+    if (el) el.classList.add('failed');
+  }
+}
+
+function win(elapsed) {
+  finished = true;
+  running = false;
+  if (timerRAF) cancelAnimationFrame(timerRAF);
+  timerEl.textContent = elapsed.toFixed(3) + 's';
+  statusEl.textContent = 'You did it!';
+  statusEl.className = 'status win';
+
+  const lb = getLeaderboard(mode);
+  if (lb.length < MAX_LEADERBOARD || elapsed < lb[lb.length - 1].time) {
+    pendingTime = elapsed;
+    finalTimeEl.textContent = elapsed.toFixed(3) + 's';
+    nameInput.value = '';
+    nameOverlay.classList.add('show');
+    setTimeout(() => nameInput.focus(), 50);
+  }
+}
+
+function getLeaderboard(m) {
+  try {
+    return JSON.parse(localStorage.getItem('typeitall_lb_' + m)) || [];
+  } catch { return []; }
+}
+
+function saveLeaderboard(m, lb) {
+  localStorage.setItem('typeitall_lb_' + m, JSON.stringify(lb));
+}
+
+function submitName() {
+  if (pendingTime === null) return;
+  const name = nameInput.value.trim() || 'Anonymous';
+  const lb = getLeaderboard(mode);
+  lb.push({ name, time: pendingTime });
+  lb.sort((a, b) => a.time - b.time);
+  if (lb.length > MAX_LEADERBOARD) lb.length = MAX_LEADERBOARD;
+  saveLeaderboard(mode, lb);
+  pendingTime = null;
+  nameOverlay.classList.remove('show');
+  viewingLb = mode;
+  renderLeaderboard();
+}
+
+function showLeaderboard(m) {
+  viewingLb = m;
+  document.getElementById('lbNormalTab').classList.toggle('active', m === 'normal');
+  document.getElementById('lbStrictTab').classList.toggle('active', m === 'strict');
+  renderLeaderboard();
+}
+
+function renderLeaderboard() {
+  const lb = getLeaderboard(viewingLb);
+  const listEl = document.getElementById('leaderboardList');
+  if (lb.length === 0) {
+    listEl.innerHTML = '<div class="lb-empty">No entries yet. Be the first!</div>';
+    return;
+  }
+  listEl.innerHTML = lb.map((e, i) =>
+    `<div class="lb-entry">
+      <span class="lb-rank">${i + 1}.</span>
+      <span class="lb-name">${escapeHtml(e.name)}</span>
+      <span class="lb-time">${e.time.toFixed(3)}s</span>
+    </div>`
+  ).join('');
+}
+
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+document.addEventListener('keydown', (e) => {
+  // Allow name input when overlay is showing
+  if (nameOverlay.classList.contains('show')) {
+    if (e.key === 'Enter') submitName();
+    return;
+  }
+
+  // Restart shortcuts
+  if (finished || failed) {
+    if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      restart();
+      return;
+    }
+  }
+
+  if (finished || failed) return;
+
+  const key = e.key.toLowerCase();
+
+  // Check for invalid key (not a single letter)
+  if (key.length !== 1 || key < 'a' || key > 'z') {
+    if (running || !startTime) {
+      // If game hasn't started yet and they press a bad key, fail immediately
+      if (!running && !startTime) {
+        startTime = performance.now();
+        running = true;
+        updateTimer();
+      }
+      fail('DISQUALIFIED! Invalid key: ' + e.key, null);
+    }
+    return;
+  }
+
+  // Strict mode: duplicate check
+  if (mode === 'strict' && pressed.has(key)) {
+    fail('DISQUALIFIED! Pressed "' + key.toUpperCase() + '" twice!', key);
+    return;
+  }
+
+  // Normal mode: ignore already pressed
+  if (pressed.has(key)) return;
+
+  // Start timer on first key
+  if (!running) {
+    startTime = performance.now();
+    running = true;
+    updateTimer();
+  }
+
+  pressed.add(key);
+  document.getElementById('key-' + key).classList.add('pressed');
+  statusEl.textContent = pressed.size + ' / 26';
+
+  if (pressed.size === 26) {
+    const elapsed = (performance.now() - startTime) / 1000;
+    win(elapsed);
+  }
+});
+
+renderLeaderboard();
+</script>
+
+</body>
+</html>
