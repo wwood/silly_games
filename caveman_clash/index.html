@@ -425,7 +425,7 @@
       background: #0c0820; border: 3px solid #6050b8; border-radius: 16px;
       padding: 26px 30px 28px; text-align: center;
       display: flex; flex-direction: column; align-items: center; gap: 14px;
-      min-width: 320px; max-width: 400px;
+      min-width: 320px; max-width: 480px;
       box-shadow: 0 0 70px rgba(80,60,200,0.35), 0 0 120px rgba(0,0,0,0.9);
       animation: quiz-in 0.34s cubic-bezier(0.34,1.4,0.64,1) forwards;
     }
@@ -459,6 +459,23 @@
     .quiz-feedback { font-size: 16px; font-weight: bold; min-height: 22px; }
     .quiz-feedback.correct { color: #50d870; }
     .quiz-feedback.wrong   { color: #e05050; }
+    .quiz-passage {
+      width: 100%; background: rgba(255,255,255,0.05); border: 1px solid #3a3070;
+      border-radius: 8px; padding: 12px 16px;
+      color: #c0b8e8; font-size: 15px; line-height: 1.6;
+      text-align: left; font-style: italic;
+    }
+    .quiz-choices {
+      width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    }
+    .quiz-choice-btn {
+      padding: 10px 12px; background: #07051a; border: 2px solid #5040a8; border-radius: 8px;
+      color: #e0d8ff; font-size: 14px; font-family: Georgia, serif;
+      cursor: pointer; transition: all 0.12s; text-align: center; line-height: 1.3;
+    }
+    .quiz-choice-btn:hover:not(:disabled) { background: rgba(80,60,180,0.2); border-color: #9880e0; }
+    .quiz-choice-btn.correct-choice { background: linear-gradient(145deg,#1a4020,#0a2010); border-color: #50c870; color: #80ff90; }
+    .quiz-choice-btn.wrong-choice   { background: linear-gradient(145deg,#401820,#200a10); border-color: #c85050; color: #ff8090; }
     .quiz-continue-btn {
       width: 100%; padding: 11px 24px; border-radius: 8px;
       background: linear-gradient(145deg, #5a3018, #3a1e0c); border: 2px solid #9a6030; color: #e8c060;
@@ -729,7 +746,9 @@
       <span class="quiz-card-name"   id="quiz-card-name">—</span>
     </div>
     <div class="quiz-type-badge" id="quiz-type-badge">📐 Math</div>
-    <div class="quiz-question"   id="quiz-question">—</div>
+    <div class="quiz-passage"   id="quiz-passage"   style="display:none"></div>
+    <div class="quiz-question"  id="quiz-question">—</div>
+    <div class="quiz-choices"   id="quiz-choices"   style="display:none"></div>
     <input class="quiz-input" id="quiz-answer-input" type="text" placeholder="Your answer…" autocomplete="off" />
     <button class="quiz-submit-btn"   id="quiz-submit-btn"   onclick="submitQuizAnswer()">Submit Answer</button>
     <div class="quiz-feedback" id="quiz-feedback"></div>
@@ -1115,7 +1134,173 @@ const PERCENT_PAIRS = [
   [75,4],[75,8],[75,12],[75,20],[75,40],[75,60],[75,80],
 ];
 
+// ── Comprehension question bank (Grade 1 phonics) ──────────────────────────
+const COMPREHEND_G1 = [
+  // ay
+  { passage: 'Jay and May went to play by the bay. They saw a snail on the way.',
+    q: 'Who went to play by the bay?',
+    choices: ['Jay and May', 'Bob and Sue', 'Ray and Pat', 'Mom and Dad'], a: 'Jay and May' },
+  { passage: 'The snail left a long trail in the rain. It did not want to wait.',
+    q: 'What did the snail leave behind?',
+    choices: ['a trail', 'a shell', 'a leaf', 'a rock'], a: 'a trail' },
+  { passage: 'Kay said she would stay and play all day. She felt happy that way.',
+    q: 'How long did Kay want to stay?',
+    choices: ['all day', 'one hour', 'a bit', 'all night'], a: 'all day' },
+  { passage: 'The train came late on a rainy day. Ray had to wait on the platform.',
+    q: 'Why did Ray have to wait?',
+    choices: ['the train came late', 'he forgot his ticket', 'the station was closed', 'it was too early'], a: 'the train came late' },
+  // ee
+  { passage: 'Three green frogs sat by the big tree. They liked to sleep near the creek.',
+    q: 'Where did the frogs like to sleep?',
+    choices: ['near the creek', 'in a pond', 'on a log', 'in a cave'], a: 'near the creek' },
+  { passage: 'The bee flew from tree to tree. It had to find seeds to feed its queen.',
+    q: 'What did the bee need to find?',
+    choices: ['seeds', 'flowers', 'honey', 'leaves'], a: 'seeds' },
+  { passage: 'Lee brushed his teeth before he went to sleep. He felt clean and neat.',
+    q: 'What did Lee do before he slept?',
+    choices: ['brushed his teeth', 'had a drink', 'read a book', 'turned off the light'], a: 'brushed his teeth' },
+  { passage: 'The queen stood under the green tree by the deep stream.',
+    q: 'Where did the queen stand?',
+    choices: ['under the green tree', 'on a hill', 'by the sea', 'in the cave'], a: 'under the green tree' },
+  // igh
+  { passage: 'Last night, the moon gave off a bright light. The knight could see far and wide.',
+    q: 'What gave off a bright light?',
+    choices: ['the moon', 'a torch', 'the sun', 'a lamp'], a: 'the moon' },
+  { passage: 'The bright kite flew high in the sky. It was a sight to see.',
+    q: 'Where did the kite fly?',
+    choices: ['high in the sky', 'over the sea', 'near the trees', 'on the ground'], a: 'high in the sky' },
+  { passage: 'The light was too bright. Mike had to shut his eyes tight.',
+    q: 'Why did Mike shut his eyes?',
+    choices: ['the light was too bright', 'he was sleepy', 'it was night', 'he was scared'], a: 'the light was too bright' },
+  { passage: 'The knight fought with all his might on the dark night.',
+    q: 'When did the knight fight?',
+    choices: ['on the dark night', 'at noon', 'in the morning', 'at dawn'], a: 'on the dark night' },
+  // ow (long-o: snow, grow, blow)
+  { passage: 'The wind began to blow and the snow started to fall. It would grow into a big pile.',
+    q: 'What started to fall when the wind blew?',
+    choices: ['snow', 'rain', 'leaves', 'hail'], a: 'snow' },
+  { passage: 'Jo watched the flowers grow slowly in the sun. She liked to see them glow.',
+    q: 'What did Jo watch grow?',
+    choices: ['flowers', 'trees', 'grass', 'mushrooms'], a: 'flowers' },
+  { passage: 'The crow flew low over the row of trees. The wind was too slow to lift it high.',
+    q: 'How did the crow fly?',
+    choices: ['low over the trees', 'high above the clouds', 'fast over the sea', 'slow near the ground'], a: 'low over the trees' },
+  { passage: 'We threw snowballs and watched them grow in the cold. The glow from the snow lit the yard.',
+    q: 'What lit up the yard?',
+    choices: ['the glow from the snow', 'a torch', 'the moon', 'a lamp'], a: 'the glow from the snow' },
+  // oo like book
+  { passage: 'Brook took a book from the wooden shelf and sat in the nook to read it.',
+    q: 'Where did Brook sit to read?',
+    choices: ['in the nook', 'by the window', 'in the garden', 'on the roof'], a: 'in the nook' },
+  { passage: 'The cook took a good look at the recipe book before she stood by the stove.',
+    q: 'What did the cook look at?',
+    choices: ['a recipe book', 'a menu', 'a shopping list', 'a label'], a: 'a recipe book' },
+  { passage: 'The wolf shook the branches of the wood. He put his hood up to stay warm.',
+    q: 'What did the wolf put up to stay warm?',
+    choices: ['his hood', 'a blanket', 'a hat', 'his paws'], a: 'his hood' },
+  { passage: 'She stood on the wooden bridge and took a good look at the brook below.',
+    q: 'What did she look at from the bridge?',
+    choices: ['the brook below', 'the trees', 'some ducks', 'a boat'], a: 'the brook below' },
+  // oo like hoop
+  { passage: 'The moon lit up the swimming pool. Ruby kicked off her boot and jumped in.',
+    q: 'What did Ruby take off before jumping in?',
+    choices: ['her boot', 'her hat', 'her coat', 'her scarf'], a: 'her boot' },
+  { passage: 'At the zoo, a baboon used a broom to sweep his room.',
+    q: 'What did the baboon use to sweep?',
+    choices: ['a broom', 'a brush', 'a cloth', 'his hands'], a: 'a broom' },
+  { passage: 'We will go to school soon. I packed food in a bag so I can eat at noon.',
+    q: 'When will they go to school?',
+    choices: ['soon', 'never', 'at night', 'next week'], a: 'soon' },
+  { passage: 'The little duckling splashed in the cool pool under the full moon.',
+    q: 'Where did the duckling splash?',
+    choices: ['in the cool pool', 'in a puddle', 'in the river', 'in the sea'], a: 'in the cool pool' },
+  // ar
+  { passage: 'Carl drove the car to the farm. He parked near the barn and looked up at the stars.',
+    q: 'Where did Carl drive to?',
+    choices: ['the farm', 'the park', 'the shop', 'the school'], a: 'the farm' },
+  { passage: 'The jar of jam was in the dark pantry. It was hard to find in the dark.',
+    q: 'Where was the jar of jam?',
+    choices: ['in the dark pantry', 'on the shelf', 'in the fridge', 'in the car'], a: 'in the dark pantry' },
+  { passage: 'On a clear night you can see the stars. They shine far away in the dark sky.',
+    q: 'When can you see the stars?',
+    choices: ['on a clear night', 'on a rainy day', 'in the morning', 'in the afternoon'], a: 'on a clear night' },
+  { passage: 'The farmer worked hard in the yard from the start of the day to the dark.',
+    q: 'Where did the farmer work?',
+    choices: ['in the yard', 'in the barn', 'in the field', 'in the garden'], a: 'in the yard' },
+  // or
+  { passage: 'Every morning, a horse ate corn in the yard. The farm was full of sound.',
+    q: 'What did the horse eat in the morning?',
+    choices: ['corn', 'hay', 'grass', 'oats'], a: 'corn' },
+  { passage: 'The storm brought short bursts of rain. The water poured down the shore.',
+    q: 'What did the storm bring?',
+    choices: ['short bursts of rain', 'snow and frost', 'hot dry wind', 'bright sunshine'], a: 'short bursts of rain' },
+  { passage: 'Boris went to the store to buy more oranges for the morning.',
+    q: 'Why did Boris go to the store?',
+    choices: ['to buy more oranges', 'to find a fork', 'to look at books', 'to meet a friend'], a: 'to buy more oranges' },
+  { passage: 'The sport was played on the short grass near the shore. Everyone scored!',
+    q: 'Where was the sport played?',
+    choices: ['on the short grass near the shore', 'in a stadium', 'on the sand', 'in a forest'], a: 'on the short grass near the shore' },
+  // air
+  { passage: 'Claire sat on the wooden chair and felt the cool air on her hair. It was a fair day.',
+    q: 'What did Claire sit on?',
+    choices: ['a wooden chair', 'a bench', 'the grass', 'a stool'], a: 'a wooden chair' },
+  { passage: 'The bear walked up the stair to find the hare. The air up there was fresh.',
+    q: 'Who was the bear looking for?',
+    choices: ['the hare', 'the fox', 'the wolf', 'the owl'], a: 'the hare' },
+  { passage: 'At the fair, the children played games and shared sweet pears. The air smelled good.',
+    q: 'What did the children eat at the fair?',
+    choices: ['sweet pears', 'cotton candy', 'cake', 'biscuits'], a: 'sweet pears' },
+  { passage: 'She brushed her hair on the stair and felt the cool air from outside.',
+    q: 'Where did she brush her hair?',
+    choices: ['on the stair', 'in her room', 'in the garden', 'by the window'], a: 'on the stair' },
+  // ir
+  { passage: 'The bird sat on the first branch of the fir tree. A girl in a shirt watched it.',
+    q: 'Where did the bird sit?',
+    choices: ['on the first branch', 'on the roof', 'on a fence', 'on the ground'], a: 'on the first branch' },
+  { passage: 'The girl stirred the pot with a stick. The dirt on her shirt made her mum sigh.',
+    q: 'What did the girl do with the stick?',
+    choices: ['stirred the pot', 'drew in the dirt', 'hit a tree', 'poked the fire'], a: 'stirred the pot' },
+  { passage: 'Bert was first in line at the circus. He wore a bright shirt and a big grin.',
+    q: 'What did Bert wear?',
+    choices: ['a bright shirt', 'a coat', 'a hat', 'a scarf'], a: 'a bright shirt' },
+  { passage: 'The third bird chirped loudly from the fir tree as the girl walked by.',
+    q: 'Which bird chirped?',
+    choices: ['the third bird', 'the first bird', 'the second bird', 'all the birds'], a: 'the third bird' },
+  // ou
+  { passage: 'A mouse crept out of the house into the loud storm. It found a leaf to hide under.',
+    q: 'Where did the mouse go?',
+    choices: ['out of the house', 'into the barn', 'under the bed', 'into a hole'], a: 'out of the house' },
+  { passage: 'The crowd let out a loud shout when the team scored. The sound was heard all around.',
+    q: 'Why did the crowd shout?',
+    choices: ['the team scored', 'it started to rain', 'the game ended', 'the lights went out'], a: 'the team scored' },
+  { passage: 'Lou found a round pebble on the ground outside. She was proud of her find.',
+    q: 'What did Lou find?',
+    choices: ['a round pebble', 'a leaf', 'a coin', 'a flower'], a: 'a round pebble' },
+  { passage: 'The cloud was so loud it shook the ground. Everyone ran out of the house.',
+    q: 'What did everyone do?',
+    choices: ['ran out of the house', 'hid under the bed', 'stayed inside', 'called for help'], a: 'ran out of the house' },
+  // oy
+  { passage: 'The boy played with his toy robot with great joy. It made a funny noise.',
+    q: 'What did the boy play with?',
+    choices: ['a toy robot', 'a ball', 'a train', 'a car'], a: 'a toy robot' },
+  { passage: 'Roy and Joy found some coins in the old soil near the garden.',
+    q: 'Where did they find the coins?',
+    choices: ['in the old soil', 'in the sea', 'in a box', 'under a rock'], a: 'in the old soil' },
+  { passage: 'The noisy boys made a choice to join the game. They all felt great joy.',
+    q: 'What did the boys decide to do?',
+    choices: ['join the game', 'go home', 'eat lunch', 'read books'], a: 'join the game' },
+  { passage: 'Troy was full of joy when his toy boat floated across the pool without noise.',
+    q: 'What made Troy joyful?',
+    choices: ['his toy boat floated', 'he won a game', 'he found a coin', 'he got a gift'], a: 'his toy boat floated' },
+];
+
+function generateComprehensionQuestion() {
+  const item = pick(COMPREHEND_G1);
+  return { type: '📖 Reading', passage: item.passage, q: item.q, choices: item.choices, a: item.a };
+}
+
 function generateQuestion(difficulty) {
+  if (difficulty === 'comprehension') return generateComprehensionQuestion();
   return Math.random() < 0.5 ? generateMathQuestion(difficulty) : generateSpellingQuestion(difficulty);
 }
 
@@ -1201,13 +1386,14 @@ function choosePlayerCount(n) {
         <input class="name-input" id="name-input-${i}" type="text"
                placeholder="Player ${i + 1}" maxlength="20" />
         <div class="diff-btns">
-          <button class="diff-btn active" data-diff="grade1" onclick="pickDiff(this)">⭐ Gr.1</button>
-          <button class="diff-btn"        data-diff="grade3" onclick="pickDiff(this)">✏️ Gr.3</button>
-          <button class="diff-btn"        data-diff="grade4" onclick="pickDiff(this)">📚 Gr.4</button>
-          <button class="diff-btn"        data-diff="grade5" onclick="pickDiff(this)">📖 Gr.5</button>
-          <button class="diff-btn"        data-diff="grade6" onclick="pickDiff(this)">📝 Gr.6</button>
-          <button class="diff-btn"        data-diff="grade7" onclick="pickDiff(this)">🔬 Gr.7</button>
-          <button class="diff-btn"        data-diff="adult"  onclick="pickDiff(this)">🎓 Adult</button>
+          <button class="diff-btn active" data-diff="grade1"        onclick="pickDiff(this)">⭐ Gr.1</button>
+          <button class="diff-btn"        data-diff="comprehension" onclick="pickDiff(this)">📖 Read</button>
+          <button class="diff-btn"        data-diff="grade3"        onclick="pickDiff(this)">✏️ Gr.3</button>
+          <button class="diff-btn"        data-diff="grade4"        onclick="pickDiff(this)">📚 Gr.4</button>
+          <button class="diff-btn"        data-diff="grade5"        onclick="pickDiff(this)">📖 Gr.5</button>
+          <button class="diff-btn"        data-diff="grade6"        onclick="pickDiff(this)">📝 Gr.6</button>
+          <button class="diff-btn"        data-diff="grade7"        onclick="pickDiff(this)">🔬 Gr.7</button>
+          <button class="diff-btn"        data-diff="adult"         onclick="pickDiff(this)">🎓 Adult</button>
         </div>
       </div>`;
     container.appendChild(row);
@@ -1495,22 +1681,60 @@ function showQuizModal(player, card, cb) {
   document.getElementById('quiz-type-badge').textContent  = qObj.type;
   document.getElementById('quiz-question').textContent    = qObj.q;
 
-  const input = document.getElementById('quiz-answer-input');
-  input.value        = '';
-  input.dataset.answer = qObj.a;
-  input.disabled     = false;
-  input.onkeydown    = e => { if (e.key === 'Enter') submitQuizAnswer(); };
-
-  document.getElementById('quiz-feedback').textContent    = '';
-  document.getElementById('quiz-feedback').className      = 'quiz-feedback';
-  document.getElementById('quiz-submit-btn').style.display   = '';
+  document.getElementById('quiz-feedback').textContent = '';
+  document.getElementById('quiz-feedback').className   = 'quiz-feedback';
   document.getElementById('quiz-continue-btn').style.display = 'none';
 
   const box = document.getElementById('quiz-box-inner');
   box.style.animation = 'none'; void box.offsetWidth; box.style.animation = '';
 
+  if (Array.isArray(qObj.choices)) {
+    document.getElementById('quiz-passage').textContent    = qObj.passage || '';
+    document.getElementById('quiz-passage').style.display  = qObj.passage ? '' : 'none';
+    document.getElementById('quiz-answer-input').style.display = 'none';
+    document.getElementById('quiz-submit-btn').style.display   = 'none';
+
+    const choicesEl = document.getElementById('quiz-choices');
+    choicesEl.style.display = '';
+    choicesEl.innerHTML = '';
+    qObj.choices.forEach(choice => {
+      const btn = document.createElement('button');
+      btn.className   = 'quiz-choice-btn';
+      btn.textContent = choice;
+      btn.onclick     = () => selectChoice(choice, qObj.a, choicesEl);
+      choicesEl.appendChild(btn);
+    });
+  } else {
+    document.getElementById('quiz-passage').style.display  = 'none';
+    document.getElementById('quiz-choices').style.display  = 'none';
+
+    const input = document.getElementById('quiz-answer-input');
+    input.style.display  = '';
+    input.value          = '';
+    input.dataset.answer = qObj.a;
+    input.disabled       = false;
+    input.onkeydown      = e => { if (e.key === 'Enter') submitQuizAnswer(); };
+    document.getElementById('quiz-submit-btn').style.display = '';
+    setTimeout(() => input.focus(), 80);
+  }
+
   document.getElementById('quiz-modal').style.display = 'flex';
-  setTimeout(() => input.focus(), 80);
+}
+
+function selectChoice(chosen, correct, choicesEl) {
+  const ok = chosen.trim().toLowerCase() === correct.trim().toLowerCase();
+  choicesEl.querySelectorAll('.quiz-choice-btn').forEach(btn => {
+    btn.disabled = true;
+    const label = btn.textContent.trim().toLowerCase();
+    if (label === correct.trim().toLowerCase())        btn.classList.add('correct-choice');
+    else if (label === chosen.trim().toLowerCase())    btn.classList.add('wrong-choice');
+  });
+  const fb = document.getElementById('quiz-feedback');
+  fb.textContent = ok ? '✅ Correct!' : `❌ The answer was: ${correct}`;
+  fb.className   = `quiz-feedback ${ok ? 'correct' : 'wrong'}`;
+  const continueBtn = document.getElementById('quiz-continue-btn');
+  continueBtn.style.display  = '';
+  continueBtn.dataset.result = ok ? '1' : '0';
 }
 
 function submitQuizAnswer() {
