@@ -477,6 +477,7 @@
     .quiz-choice-btn.correct-choice { background: linear-gradient(145deg,#1a4020,#0a2010); border-color: #50c870; color: #80ff90; }
     .quiz-choice-btn.wrong-choice   { background: linear-gradient(145deg,#401820,#200a10); border-color: #c85050; color: #ff8090; }
     .quiz-emoji { font-size: 80px; line-height: 1; text-align: center; }
+    .quiz-emoji svg { width: 80px; height: 80px; display: block; margin: 0 auto; }
     .quiz-continue-btn {
       width: 100%; padding: 11px 24px; border-radius: 8px;
       background: linear-gradient(145deg, #5a3018, #3a1e0c); border: 2px solid #9a6030; color: #e8c060;
@@ -1139,18 +1140,18 @@ const PERCENT_PAIRS = [
 // ── Comprehension question bank (Grade 1 phonics) ──────────────────────────
 const COMPREHEND_G1 = [
   // ay
-  { passage: 'Jay and May went to play by the bay. They saw a snail on the way.',
+  { passage: 'Jay and May went to play by the bay. They stayed all day and watched the waves sway.',
     q: 'Who went to play by the bay?',
     choices: ['Jay and May', 'Bob and Sue', 'Ray and Pat', 'Mom and Dad'], a: 'Jay and May' },
-  { passage: 'The snail left a long trail in the rain. It did not want to wait.',
-    q: 'What did the snail leave behind?',
-    choices: ['a trail', 'a shell', 'a leaf', 'a rock'], a: 'a trail' },
+  { passage: 'A stray cat found its way to the bay. It played in the spray all day.',
+    q: 'Where did the stray cat go?',
+    choices: ['to the bay', 'to the park', 'to the farm', 'to the hay'], a: 'to the bay' },
   { passage: 'Kay said she would stay and play all day. She felt happy that way.',
     q: 'How long did Kay want to stay?',
     choices: ['all day', 'one hour', 'a bit', 'all night'], a: 'all day' },
-  { passage: 'The train came late on a rainy day. Ray had to wait on the platform.',
-    q: 'Why did Ray have to wait?',
-    choices: ['the train came late', 'he forgot his ticket', 'the station was closed', 'it was too early'], a: 'the train came late' },
+  { passage: 'On a gray day, May sat by the bay all day. She liked to sway and stay.',
+    q: 'What did May like to do?',
+    choices: ['sway and stay', 'run away', 'play in clay', 'spray water'], a: 'sway and stay' },
   // ee
   { passage: 'Three green frogs sat by the big tree. They liked to sleep near the creek.',
     q: 'Where did the frogs like to sleep?',
@@ -1168,9 +1169,9 @@ const COMPREHEND_G1 = [
   { passage: 'Last night, the moon gave off a bright light. The knight could see far and wide.',
     q: 'What gave off a bright light?',
     choices: ['the moon', 'a torch', 'the sun', 'a lamp'], a: 'the moon' },
-  { passage: 'The bright kite flew high in the sky. It was a sight to see.',
-    q: 'Where did the kite fly?',
-    choices: ['high in the sky', 'over the sea', 'near the trees', 'on the ground'], a: 'high in the sky' },
+  { passage: 'The bright knight held his light up high. What a sight on that dark night!',
+    q: 'What did the knight hold up?',
+    choices: ['his light', 'his sword', 'a flag', 'a shield'], a: 'his light' },
   { passage: 'The light was too bright. Mike had to shut his eyes tight.',
     q: 'Why did Mike shut his eyes?',
     choices: ['the light was too bright', 'he was sleepy', 'it was night', 'he was scared'], a: 'the light was too bright' },
@@ -1246,12 +1247,12 @@ const COMPREHEND_G1 = [
   { passage: 'Claire sat on the wooden chair and felt the cool air on her hair. It was a fair day.',
     q: 'What did Claire sit on?',
     choices: ['a wooden chair', 'a bench', 'the grass', 'a stool'], a: 'a wooden chair' },
-  { passage: 'The bear walked up the stair to find the hare. The air up there was fresh.',
-    q: 'Who was the bear looking for?',
-    choices: ['the hare', 'the fox', 'the wolf', 'the owl'], a: 'the hare' },
-  { passage: 'At the fair, the children played games and shared sweet pears. The air smelled good.',
-    q: 'What did the children eat at the fair?',
-    choices: ['sweet pears', 'cotton candy', 'cake', 'biscuits'], a: 'sweet pears' },
+  { passage: 'A fairy walked up the stair into the cool air. She had fair hair and a bright smile.',
+    q: 'What did the fairy walk up?',
+    choices: ['the stair', 'a hill', 'a ladder', 'a tree'], a: 'the stair' },
+  { passage: 'At the fair, a pair of kids ran up the stair. The cool air made their hair fly.',
+    q: 'What did the pair of kids run up?',
+    choices: ['the stair', 'a hill', 'the slide', 'a ladder'], a: 'the stair' },
   { passage: 'She brushed her hair on the stair and felt the cool air from outside.',
     q: 'Where did she brush her hair?',
     choices: ['on the stair', 'in her room', 'in the garden', 'by the window'], a: 'on the stair' },
@@ -1285,15 +1286,15 @@ const COMPREHEND_G1 = [
   { passage: 'The boy played with his toy robot with great joy. It made a funny noise.',
     q: 'What did the boy play with?',
     choices: ['a toy robot', 'a ball', 'a train', 'a car'], a: 'a toy robot' },
-  { passage: 'Roy and Joy found some coins in the old soil near the garden.',
-    q: 'Where did they find the coins?',
-    choices: ['in the old soil', 'in the sea', 'in a box', 'under a rock'], a: 'in the old soil' },
-  { passage: 'The noisy boys made a choice to join the game. They all felt great joy.',
-    q: 'What did the boys decide to do?',
-    choices: ['join the game', 'go home', 'eat lunch', 'read books'], a: 'join the game' },
-  { passage: 'Troy was full of joy when his toy boat floated across the pool without noise.',
+  { passage: 'Roy gave his toy to Joy and she was full of joy. What a kind boy!',
+    q: 'What did Roy give to Joy?',
+    choices: ['his toy', 'a book', 'some food', 'a flower'], a: 'his toy' },
+  { passage: 'The boy enjoyed his toy so much that it filled him with joy all day.',
+    q: 'How did the toy make the boy feel?',
+    choices: ['full of joy', 'very tired', 'a bit sad', 'quite bored'], a: 'full of joy' },
+  { passage: 'Troy was full of joy when his toy boat floated all the way to the boy.',
     q: 'What made Troy joyful?',
-    choices: ['his toy boat floated', 'he won a game', 'he found a coin', 'he got a gift'], a: 'his toy boat floated' },
+    choices: ['his toy boat floated', 'he won a game', 'he enjoyed a gift', 'Roy gave him a toy'], a: 'his toy boat floated' },
 ];
 
 function generateComprehensionQuestion() {
@@ -1304,19 +1305,21 @@ function generateComprehensionQuestion() {
 // ── Picture question bank (Grade 1 phonics) ────────────────────────────────
 const PICTURE_G1 = [
   // ay
-  { emoji: '🌧️', choices: ['rain',     'run',     'rink',    'runt'],    a: 'rain'    },
-  { emoji: '🐌',  choices: ['snail',    'snake',   'snag',    'snap'],    a: 'snail'   },
-  { emoji: '🚂',  choices: ['train',    'trunk',   'trim',    'trap'],    a: 'train'   },
-  { emoji: '🎂',  choices: ['cake',     'cord',    'cube',    'cob'],     a: 'cake'    },
+  { svg: '<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="26" width="60" height="38" rx="7" fill="#e8c038" stroke="#b89018" stroke-width="2"/><line x1="10" y1="45" x2="70" y2="45" stroke="#b89018" stroke-width="2.5"/><line x1="38" y1="26" x2="38" y2="64" stroke="#b89018" stroke-width="2.5"/><line x1="14" y1="34" x2="34" y2="34" stroke="#d4a820" stroke-width="1" opacity="0.8"/><line x1="14" y1="40" x2="34" y2="40" stroke="#d4a820" stroke-width="1" opacity="0.8"/><line x1="42" y1="34" x2="66" y2="34" stroke="#d4a820" stroke-width="1" opacity="0.8"/><line x1="42" y1="40" x2="66" y2="40" stroke="#d4a820" stroke-width="1" opacity="0.8"/><line x1="14" y1="53" x2="34" y2="53" stroke="#d4a820" stroke-width="1" opacity="0.8"/><line x1="14" y1="59" x2="34" y2="59" stroke="#d4a820" stroke-width="1" opacity="0.8"/><line x1="42" y1="53" x2="66" y2="53" stroke="#d4a820" stroke-width="1" opacity="0.8"/><line x1="42" y1="59" x2="66" y2="59" stroke="#d4a820" stroke-width="1" opacity="0.8"/></svg>',
+    choices: ['hay', 'hit', 'hop', 'hot'], a: 'hay' },
+  { emoji: '🍽️', choices: ['tray',   'trap',   'trim',   'trek'],   a: 'tray'   },
+  { emoji: '🖍️', choices: ['crayon', 'crown',  'cramp',  'crane'],  a: 'crayon' },
+  { svg: '<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"><rect x="24" y="34" width="22" height="32" rx="5" fill="#4890d0" stroke="#2870b0" stroke-width="1.5"/><rect x="12" y="26" width="16" height="12" rx="4" fill="#4890d0" stroke="#2870b0" stroke-width="1.5"/><rect x="28" y="18" width="4" height="10" rx="2" fill="#2870b0"/><circle cx="53" cy="30" r="3" fill="#7ab8e8" opacity="0.9"/><circle cx="59" cy="23" r="2.5" fill="#7ab8e8" opacity="0.8"/><circle cx="61" cy="35" r="2" fill="#7ab8e8" opacity="0.7"/><circle cx="57" cy="17" r="2" fill="#7ab8e8" opacity="0.6"/></svg>',
+    choices: ['spray', 'sprig', 'sprint', 'sprang'], a: 'spray' },
   // ee
   { emoji: '🌳',  choices: ['tree',     'trip',    'trod',    'trim'],    a: 'tree'    },
   { emoji: '🐝',  choices: ['bee',      'bit',     'bat',     'bun'],     a: 'bee'     },
   { emoji: '🐑',  choices: ['sheep',    'ship',    'shop',    'shed'],    a: 'sheep'   },
-  { emoji: '🔑',  choices: ['key',      'keg',     'kid',     'kit'],     a: 'key'     },
+  { emoji: '🧀',  choices: ['cheese',   'chest',   'chase',   'chore'],   a: 'cheese'  },
   // igh
   { emoji: '🌙',  choices: ['night',    'nine',    'note',    'nest'],    a: 'night'   },
   { emoji: '💡',  choices: ['light',    'lint',    'list',    'loft'],    a: 'light'   },
-  { emoji: '🪁',  choices: ['kite',     'kilt',    'kit',     'knot'],    a: 'kite'    },
+  { emoji: '✈️',  choices: ['flight',   'float',   'flock',   'flood'],   a: 'flight'  },
   { emoji: '⚔️',  choices: ['fight',    'fist',    'felt',    'fold'],    a: 'fight'   },
   // ow (long-o)
   { emoji: '❄️',  choices: ['snow',     'snob',    'snot',    'snug'],    a: 'snow'    },
@@ -1345,8 +1348,8 @@ const PICTURE_G1 = [
   { emoji: '🚪',  choices: ['door',     'deer',    'dune',    'dale'],    a: 'door'    },
   // air
   { emoji: '🪑',  choices: ['chair',    'chain',   'charm',   'chip'],    a: 'chair'   },
-  { emoji: '🐻',  choices: ['bear',     'beak',    'bead',    'bean'],    a: 'bear'    },
-  { emoji: '🍐',  choices: ['pear',     'peak',    'pest',    'pine'],    a: 'pear'    },
+  { emoji: '🧚',  choices: ['fairy',    'ferry',   'furry',   'foggy'],   a: 'fairy'   },
+  { emoji: '🎡',  choices: ['fair',     'far',     'fan',     'fell'],    a: 'fair'    },
   { emoji: '🪜',  choices: ['stair',    'stain',   'steam',   'stem'],    a: 'stair'   },
   // ir
   { emoji: '🐦',  choices: ['bird',     'bred',    'bold',    'bend'],    a: 'bird'    },
@@ -1360,14 +1363,16 @@ const PICTURE_G1 = [
   { emoji: '👄',  choices: ['mouth',    'month',   'moat',    'molt'],    a: 'mouth'   },
   // oy
   { emoji: '🧸',  choices: ['toy',      'top',     'ton',     'tow'],     a: 'toy'     },
-  { emoji: '🪙',  choices: ['coin',     'cone',    'cord',    'corn'],    a: 'coin'    },
+  { emoji: '🦪',  choices: ['oyster',   'onion',   'orange',  'otter'],   a: 'oyster'  },
   { emoji: '👦',  choices: ['boy',      'bay',     'bun',     'bug'],     a: 'boy'     },
   { emoji: '😄',  choices: ['joy',      'jaw',     'jog',     'jot'],     a: 'joy'     },
 ];
 
 function generatePictureQuestion() {
   const item = pick(PICTURE_G1);
-  return { type: '🖼️ Picture', emoji: item.emoji, q: 'What is this?', choices: shuffle(item.choices), a: item.a };
+  const q = { type: '🖼️ Picture', q: 'What is this?', choices: shuffle(item.choices), a: item.a };
+  if (item.svg) q.svg = item.svg; else q.emoji = item.emoji;
+  return q;
 }
 
 function generateQuestion(difficulty) {
@@ -1763,8 +1768,8 @@ function showQuizModal(player, card, cb) {
 
   const emojiEl   = document.getElementById('quiz-emoji');
   const passageEl = document.getElementById('quiz-passage');
-  emojiEl.textContent   = qObj.emoji   || '';
-  emojiEl.style.display = qObj.emoji   ? '' : 'none';
+  if (qObj.svg) { emojiEl.innerHTML = qObj.svg; emojiEl.style.display = ''; }
+  else { emojiEl.textContent = qObj.emoji || ''; emojiEl.style.display = qObj.emoji ? '' : 'none'; }
   passageEl.textContent = qObj.passage || '';
   passageEl.style.display = qObj.passage ? '' : 'none';
 
