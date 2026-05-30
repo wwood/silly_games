@@ -476,6 +476,7 @@
     .quiz-choice-btn:hover:not(:disabled) { background: rgba(80,60,180,0.2); border-color: #9880e0; }
     .quiz-choice-btn.correct-choice { background: linear-gradient(145deg,#1a4020,#0a2010); border-color: #50c870; color: #80ff90; }
     .quiz-choice-btn.wrong-choice   { background: linear-gradient(145deg,#401820,#200a10); border-color: #c85050; color: #ff8090; }
+    .quiz-emoji { font-size: 80px; line-height: 1; text-align: center; }
     .quiz-continue-btn {
       width: 100%; padding: 11px 24px; border-radius: 8px;
       background: linear-gradient(145deg, #5a3018, #3a1e0c); border: 2px solid #9a6030; color: #e8c060;
@@ -746,6 +747,7 @@
       <span class="quiz-card-name"   id="quiz-card-name">—</span>
     </div>
     <div class="quiz-type-badge" id="quiz-type-badge">📐 Math</div>
+    <div class="quiz-emoji"     id="quiz-emoji"     style="display:none"></div>
     <div class="quiz-passage"   id="quiz-passage"   style="display:none"></div>
     <div class="quiz-question"  id="quiz-question">—</div>
     <div class="quiz-choices"   id="quiz-choices"   style="display:none"></div>
@@ -1296,11 +1298,81 @@ const COMPREHEND_G1 = [
 
 function generateComprehensionQuestion() {
   const item = pick(COMPREHEND_G1);
-  return { type: '📖 Reading', passage: item.passage, q: item.q, choices: item.choices, a: item.a };
+  return { type: '📖 Reading', passage: item.passage, q: item.q, choices: shuffle(item.choices), a: item.a };
+}
+
+// ── Picture question bank (Grade 1 phonics) ────────────────────────────────
+const PICTURE_G1 = [
+  // ay
+  { emoji: '🌧️', choices: ['rain',     'run',     'rink',    'runt'],    a: 'rain'    },
+  { emoji: '🐌',  choices: ['snail',    'snake',   'snag',    'snap'],    a: 'snail'   },
+  { emoji: '🚂',  choices: ['train',    'trunk',   'trim',    'trap'],    a: 'train'   },
+  { emoji: '🎂',  choices: ['cake',     'cord',    'cube',    'cob'],     a: 'cake'    },
+  // ee
+  { emoji: '🌳',  choices: ['tree',     'trip',    'trod',    'trim'],    a: 'tree'    },
+  { emoji: '🐝',  choices: ['bee',      'bit',     'bat',     'bun'],     a: 'bee'     },
+  { emoji: '🐑',  choices: ['sheep',    'ship',    'shop',    'shed'],    a: 'sheep'   },
+  { emoji: '🔑',  choices: ['key',      'keg',     'kid',     'kit'],     a: 'key'     },
+  // igh
+  { emoji: '🌙',  choices: ['night',    'nine',    'note',    'nest'],    a: 'night'   },
+  { emoji: '💡',  choices: ['light',    'lint',    'list',    'loft'],    a: 'light'   },
+  { emoji: '🪁',  choices: ['kite',     'kilt',    'kit',     'knot'],    a: 'kite'    },
+  { emoji: '⚔️',  choices: ['fight',    'fist',    'felt',    'fold'],    a: 'fight'   },
+  // ow (long-o)
+  { emoji: '❄️',  choices: ['snow',     'snob',    'snot',    'snug'],    a: 'snow'    },
+  { emoji: '🎀',  choices: ['bow',      'box',     'bop',     'bob'],     a: 'bow'     },
+  { emoji: '🌈',  choices: ['rainbow',  'raindrop','rainfall','raincoat'],a: 'rainbow' },
+  { emoji: '🏹',  choices: ['arrow',    'actor',   'album',   'acorn'],   a: 'arrow'   },
+  // oo like book
+  { emoji: '📖',  choices: ['book',     'back',    'buck',    'bark'],    a: 'book'    },
+  { emoji: '🦶',  choices: ['foot',     'fold',    'fort',    'fog'],     a: 'foot'    },
+  { emoji: '🪝',  choices: ['hook',     'hock',    'hunk',    'honk'],    a: 'hook'    },
+  { emoji: '🪵',  choices: ['wood',     'wand',    'woke',    'wade'],    a: 'wood'    },
+  // oo like hoop
+  { emoji: '🌕',  choices: ['moon',     'moan',    'mop',     'map'],     a: 'moon'    },
+  { emoji: '🥄',  choices: ['spoon',    'sport',   'spot',    'spin'],    a: 'spoon'   },
+  { emoji: '👢',  choices: ['boot',     'bout',    'bolt',    'bode'],    a: 'boot'    },
+  { emoji: '🎈',  choices: ['balloon',  'basket',  'barrel',  'ballet'],  a: 'balloon' },
+  // ar
+  { emoji: '🚗',  choices: ['car',      'cup',     'cap',     'cod'],     a: 'car'     },
+  { emoji: '⭐',  choices: ['star',     'stir',    'stun',    'stem'],    a: 'star'    },
+  { emoji: '🫙',  choices: ['jar',      'jab',     'jet',     'jog'],     a: 'jar'     },
+  { emoji: '🦈',  choices: ['shark',    'shack',   'shrug',   'shrub'],   a: 'shark'   },
+  // or
+  { emoji: '🐴',  choices: ['horse',    'hose',    'hate',    'hive'],    a: 'horse'   },
+  { emoji: '🌽',  choices: ['corn',     'core',    'cot',     'cub'],     a: 'corn'    },
+  { emoji: '🍴',  choices: ['fork',     'folk',    'fond',    'fled'],    a: 'fork'    },
+  { emoji: '🚪',  choices: ['door',     'deer',    'dune',    'dale'],    a: 'door'    },
+  // air
+  { emoji: '🪑',  choices: ['chair',    'chain',   'charm',   'chip'],    a: 'chair'   },
+  { emoji: '🐻',  choices: ['bear',     'beak',    'bead',    'bean'],    a: 'bear'    },
+  { emoji: '🍐',  choices: ['pear',     'peak',    'pest',    'pine'],    a: 'pear'    },
+  { emoji: '🪜',  choices: ['stair',    'stain',   'steam',   'stem'],    a: 'stair'   },
+  // ir
+  { emoji: '🐦',  choices: ['bird',     'bred',    'bold',    'bend'],    a: 'bird'    },
+  { emoji: '👕',  choices: ['shirt',    'short',   'shot',    'shut'],    a: 'shirt'   },
+  { emoji: '👧',  choices: ['girl',     'gill',    'gull',    'gale'],    a: 'girl'    },
+  { emoji: '🌀',  choices: ['swirl',    'swell',   'swift',   'swam'],    a: 'swirl'   },
+  // ou
+  { emoji: '🐭',  choices: ['mouse',    'moose',   'morse',   'moat'],    a: 'mouse'   },
+  { emoji: '🏠',  choices: ['house',    'horse',   'hose',    'hole'],    a: 'house'   },
+  { emoji: '☁️',  choices: ['cloud',    'clod',    'cloth',   'clam'],    a: 'cloud'   },
+  { emoji: '👄',  choices: ['mouth',    'month',   'moat',    'molt'],    a: 'mouth'   },
+  // oy
+  { emoji: '🧸',  choices: ['toy',      'top',     'ton',     'tow'],     a: 'toy'     },
+  { emoji: '🪙',  choices: ['coin',     'cone',    'cord',    'corn'],    a: 'coin'    },
+  { emoji: '👦',  choices: ['boy',      'bay',     'bun',     'bug'],     a: 'boy'     },
+  { emoji: '😄',  choices: ['joy',      'jaw',     'jog',     'jot'],     a: 'joy'     },
+];
+
+function generatePictureQuestion() {
+  const item = pick(PICTURE_G1);
+  return { type: '🖼️ Picture', emoji: item.emoji, q: 'What is this?', choices: shuffle(item.choices), a: item.a };
 }
 
 function generateQuestion(difficulty) {
   if (difficulty === 'comprehension') return generateComprehensionQuestion();
+  if (difficulty === 'picture')       return generatePictureQuestion();
   return Math.random() < 0.5 ? generateMathQuestion(difficulty) : generateSpellingQuestion(difficulty);
 }
 
@@ -1388,6 +1460,7 @@ function choosePlayerCount(n) {
         <div class="diff-btns">
           <button class="diff-btn active" data-diff="grade1"        onclick="pickDiff(this)">⭐ Gr.1</button>
           <button class="diff-btn"        data-diff="comprehension" onclick="pickDiff(this)">📖 Read</button>
+          <button class="diff-btn"        data-diff="picture"       onclick="pickDiff(this)">🖼️ Pics</button>
           <button class="diff-btn"        data-diff="grade3"        onclick="pickDiff(this)">✏️ Gr.3</button>
           <button class="diff-btn"        data-diff="grade4"        onclick="pickDiff(this)">📚 Gr.4</button>
           <button class="diff-btn"        data-diff="grade5"        onclick="pickDiff(this)">📖 Gr.5</button>
@@ -1688,9 +1761,14 @@ function showQuizModal(player, card, cb) {
   const box = document.getElementById('quiz-box-inner');
   box.style.animation = 'none'; void box.offsetWidth; box.style.animation = '';
 
+  const emojiEl   = document.getElementById('quiz-emoji');
+  const passageEl = document.getElementById('quiz-passage');
+  emojiEl.textContent   = qObj.emoji   || '';
+  emojiEl.style.display = qObj.emoji   ? '' : 'none';
+  passageEl.textContent = qObj.passage || '';
+  passageEl.style.display = qObj.passage ? '' : 'none';
+
   if (Array.isArray(qObj.choices)) {
-    document.getElementById('quiz-passage').textContent    = qObj.passage || '';
-    document.getElementById('quiz-passage').style.display  = qObj.passage ? '' : 'none';
     document.getElementById('quiz-answer-input').style.display = 'none';
     document.getElementById('quiz-submit-btn').style.display   = 'none';
 
@@ -1705,7 +1783,6 @@ function showQuizModal(player, card, cb) {
       choicesEl.appendChild(btn);
     });
   } else {
-    document.getElementById('quiz-passage').style.display  = 'none';
     document.getElementById('quiz-choices').style.display  = 'none';
 
     const input = document.getElementById('quiz-answer-input');
